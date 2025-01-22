@@ -11,7 +11,11 @@ chmod 666 $imagedir
 docker run --rm --privileged --network host -v $imagedir:/image magnum-kubernetes \
     sh -c 'export DIB_KUBERNETES_VERSION="'$DIB_KUBERNETES_VERSION'" && \
     export DIB_RELEASE="'$DISTR'" && \
+    export DIB_CNI_PLUGINS_VERSION="'$DIB_CNI_PLUGINS_VERSION'" && \
+    export DIB_CONTAINERD_VERSION="'$DIB_CONTAINERD_VERSION'" && \
+    export DIB_CRI_TOOLS_VERSION="'$DIB_CRI_TOOLS_VERSION'" && \
+    export DIB_RUNC_VERSION="'$DIB_RUNC_VERSION'" && \
     disk-image-create -x -t qcow2 \
      --no-tmpfs \
-     -o /image/k8s-$DIB_KUBERNETES_VERSION-$DIB_RELEASE.qcow2 \
+     -o /image/k8s-v$DIB_KUBERNETES_VERSION-$DIB_RELEASE.qcow2 \
      -n block-device-efi vm ubuntu kubernetes qemu-ga allow-root'

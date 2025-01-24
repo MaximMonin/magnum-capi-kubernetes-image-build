@@ -1,0 +1,59 @@
+#!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+
+set -eu
+set -o pipefail
+
+# start containerd temporarily, and run pull (but we need to start it as a binary because systemd is not running)
+containerd --config /etc/containerd/config.toml &
+
+# Wait for the socket to appear
+while [ ! -S /run/containerd/containerd.sock ]; do
+    sleep 1
+done
+
+
+# Pre pull openstack/cni container images.
+
+# Command 'grep -r "Pulled image" /var/log/syslog' and 'crictl images' is useful to identify these images in a running cluster
+# The list of images depends on the currently installed helm charms in magnum-capi-driver
+
+# Pre pull cinder/openstack images
+crictl pull registry.k8s.io/provider-os/cinder-csi-plugin:v1.28.0
+crictl pull registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.6.3
+crictl pull registry.k8s.io/sig-storage/livenessprobe:v2.9.0
+crictl pull registry.k8s.io/provider-os/openstack-cloud-controller-manager:v1.28.0
+
+# Pre pull large cni images
+if [ ${DIB_CILIUM_TAG:-""} ]; then
+  crictl pull quay.io/cilium/cilium:$DIB_CILIUM_TAG
+  crictl pull quay.io/cilium/operator-generic:$DIB_CILIUM_TAG
+fi
+if [ ${DIB_CALICO_TAG:-""} ]; then
+  crictl pull docker.io/calico/cni:$DIB_CALICO_TAG
+  crictl pull docker.io/calico/node:$DIB_CALICO_TAG
+  crictl pull docker.io/calico/kube-controllers:$DIB_CALICO_TAG
+fi
+
+# Optimization (trying to keep prepulled images with --no-unpack option)
+mkdir -p /tmp/pulledimages
+# exporting cni/openstack images to /tmp/pulledimages
+crictl images | grep -E -- 'cilium|calico|sig-storage|provider-os' | awk '{print "/tmp/pulledimages/"$3".tar " $1":"$2}' | xargs -L1 ctr -n k8s.io images export
+# deleting cni/openstack images
+crictl images | grep -E -- 'cilium|calico|sig-storage|provider-os' | awk '{print $3}' | xargs -n 1 crictl rmi
+# reimporting images with no-unpack option
+ls -1 /tmp/pulledimages/* | xargs -L1 ctr -n k8s.io images import --no-unpack
+rm -rf /tmp/pulledimages
+
+
+# Stop containerd
+kill $(pgrep containerd)
+
+# Wait for the socket to disappear
+while [ -S /run/containerd/containerd.sock ]; do
+    sleep 1
+done

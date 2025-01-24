@@ -17,3 +17,4 @@ Ubuntu 24.04 + k8s 1.30+ as base image, tested with Magnum Capi driver.
 * qemu-ga - added qemu guest agent to image.
 * allow-root - allow root user and ssh root access with a key to kubernetes nodes.
 * block-device-efi - make sure image works under Legacy and Uefi Bios (secure boot is not supported).
+* prepull-images - pre pull openstack/cni container images.

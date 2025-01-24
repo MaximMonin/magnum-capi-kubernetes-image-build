@@ -15,7 +15,9 @@ docker run --rm --privileged --network host -v $imagedir:/image magnum-kubernete
     export DIB_CONTAINERD_VERSION="'$DIB_CONTAINERD_VERSION'" && \
     export DIB_CRI_TOOLS_VERSION="'$DIB_CRI_TOOLS_VERSION'" && \
     export DIB_RUNC_VERSION="'$DIB_RUNC_VERSION'" && \
+    export DIB_CILIUM_TAG="'$DIB_CILIUM_TAG'" && \
+    export DIB_CALICO_TAG="'$DIB_CALICO_TAG'" && \
     disk-image-create -x -t qcow2 \
      --no-tmpfs \
      -o /image/k8s-v$DIB_KUBERNETES_VERSION-$DIB_RELEASE.qcow2 \
-     -n block-device-efi vm ubuntu kubernetes qemu-ga allow-root'
+     -n block-device-efi vm ubuntu kubernetes qemu-ga allow-root prepull-images'

@@ -8,7 +8,6 @@ Ubuntu 24.04 + k8s 1.30+ as base image, tested with Magnum Capi driver.
 * https://github.com/vexxhost/capo-image-elements - project to build Kubernetes images.
 
 ### Fixes
-* Fixed build error where systemctl enable containerd/kubelet would throw exception - service does not exist. Fixed by adding element-deps.
 * Make sure the /etc/kubernetes/manifests directory exists for static pods (reduce logs on worker nodes).
 * Added initialization of KUBECONFIG environment variable.
 * cloud-init uses default Openstack datasources (Openstack, ConfigDrive)

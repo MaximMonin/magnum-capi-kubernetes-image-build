@@ -8,5 +8,6 @@ fi
 set -eu
 set -o pipefail
 
-# make sure /etc/kubernetes/manifests dir for static pods exists
-mkdir -p /etc/kubernetes/manifests
+# upgrade packages in image
+apt update
+apt upgrade -y

@@ -1,0 +1,19 @@
+#!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+
+set -eu
+set -o pipefail
+
+DIB_NPD_VERSION=${DIB_NPD_VERSION:-"0.8.20"}
+DIB_NPD_URL=${DIB_NPD_URL:-"https://github.com/kubernetes/node-problem-detector/releases/download/v${DIB_NPD_VERSION}/node-problem-detector-v${DIB_NPD_VERSION}-linux_amd64.tar.gz"}
+
+mkdir -p /home/kubernetes
+curl -s -L $DIB_NPD_URL | tar -xvz -C /home/kubernetes
+rm -rf /home/kubernetes/test
+
+# Enable service
+systemctl enable node-problem-detector

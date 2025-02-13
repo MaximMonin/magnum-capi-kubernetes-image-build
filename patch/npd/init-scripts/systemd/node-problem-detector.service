@@ -1,0 +1,16 @@
+[Unit]
+Description=Node problem detector
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStartPre=test -f /etc/kubernetes/kubelet.conf
+Restart=always
+RestartSec=10
+ExecStart=/home/kubernetes/bin/node-problem-detector --logtostderr --prometheus-port=0 \
+          --apiserver-override=https://kubernetes?inClusterConfig=false&auth=/etc/kubernetes/kubelet.conf \
+          --config.system-log-monitor=/home/kubernetes/config/kernel-monitor.json,/home/kubernetes/config/systemd-monitor.json,/home/kubernetes/config/readonly-monitor.json \
+          --config.custom-plugin-monitor=/home/kubernetes/config/kernel-monitor-counter.json,/home/kubernetes/config/systemd-monitor-counter.json,/home/kubernetes/config/health-checker-kubelet.json,/home/kubernetes/config/health-checker-containerd.json
+
+[Install]
+WantedBy=multi-user.target

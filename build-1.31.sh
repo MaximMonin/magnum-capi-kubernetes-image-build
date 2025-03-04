@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .env-build
+source .env-1.31
 
 docker build -f Dockerfile --rm --network host -t magnum-kubernetes:latest .
 

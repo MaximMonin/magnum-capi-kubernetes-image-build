@@ -31,12 +31,12 @@ crictl pull registry.k8s.io/provider-os/openstack-cloud-controller-manager:v1.28
 # Pre pull large cni images
 if [ ${DIB_CILIUM_TAG:-""} ]; then
   crictl pull quay.io/cilium/cilium:$DIB_CILIUM_TAG
-  crictl pull quay.io/cilium/operator-generic:$DIB_CILIUM_TAG
+#  crictl pull quay.io/cilium/operator-generic:$DIB_CILIUM_TAG
 fi
 if [ ${DIB_CALICO_TAG:-""} ]; then
   crictl pull docker.io/calico/cni:$DIB_CALICO_TAG
   crictl pull docker.io/calico/node:$DIB_CALICO_TAG
-  crictl pull docker.io/calico/kube-controllers:$DIB_CALICO_TAG
+#  crictl pull docker.io/calico/kube-controllers:$DIB_CALICO_TAG
 fi
 
 # Optimization (trying to keep prepulled images with --no-unpack option)

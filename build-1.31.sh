@@ -16,6 +16,7 @@ docker run --rm --privileged --network host -v $imagedir:/image magnum-kubernete
     export DIB_CRI_TOOLS_VERSION="'$DIB_CRI_TOOLS_VERSION'" && \
     export DIB_NPD_VERSION="'$DIB_NPD_VERSION'" && \
     export DIB_RUNC_VERSION="'$DIB_RUNC_VERSION'" && \
+    export DIB_CLOUD_PROVIDER_TAG="'$DIB_CLOUD_PROVIDER_TAG'" && \
     export DIB_CILIUM_TAG="'$DIB_CILIUM_TAG'" && \
     export DIB_CALICO_TAG="'$DIB_CALICO_TAG'" && \
     disk-image-create -x -t qcow2 \

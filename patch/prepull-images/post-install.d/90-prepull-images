@@ -26,7 +26,9 @@ done
 crictl pull registry.k8s.io/provider-os/cinder-csi-plugin:v1.28.0
 crictl pull registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.6.3
 crictl pull registry.k8s.io/sig-storage/livenessprobe:v2.9.0
-crictl pull registry.k8s.io/provider-os/openstack-cloud-controller-manager:v1.28.0
+if [ ${DIB_CLOUD_PROVIDER_TAG:-""} ]; then
+  crictl pull registry.k8s.io/provider-os/openstack-cloud-controller-manager:$DIB_CLOUD_PROVIDER_TAG
+fi
 
 # Pre pull large cni images
 if [ ${DIB_CILIUM_TAG:-""} ]; then
@@ -39,12 +41,12 @@ if [ ${DIB_CALICO_TAG:-""} ]; then
 #  crictl pull docker.io/calico/kube-controllers:$DIB_CALICO_TAG
 fi
 
-# Optimization (trying to keep prepulled images with --no-unpack option)
+# Optimization (trying to keep some prepulled images with --no-unpack option)
 mkdir -p /tmp/pulledimages
-# exporting cni/openstack images to /tmp/pulledimages
-crictl images | grep -E -- 'cilium|calico|sig-storage|provider-os' | awk '{print "/tmp/pulledimages/"$3".tar " $1":"$2}' | xargs -L1 ctr -n k8s.io images export
-# deleting cni/openstack images
-crictl images | grep -E -- 'cilium|calico|sig-storage|provider-os' | awk '{print $3}' | xargs -n 1 crictl rmi
+# exporting cni images to /tmp/pulledimages
+crictl images | grep -E -- 'cilium|calico' | awk '{print "/tmp/pulledimages/"$3".tar " $1":"$2}' | xargs -L1 ctr -n k8s.io images export
+# deleting cni images
+crictl images | grep -E -- 'cilium|calico' | awk '{print $3}' | xargs -n 1 crictl rmi
 # reimporting images with no-unpack option
 ls -1 /tmp/pulledimages/* | xargs -L1 ctr -n k8s.io images import --no-unpack
 rm -rf /tmp/pulledimages
